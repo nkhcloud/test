@@ -365,16 +365,13 @@ export default function BoxCounterPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#0f172a] via-[#020617] to-black opacity-80 pointer-events-none" />
       )}
       <div className="w-full max-w-2xl relative z-10">
-        <div className="absolute top-4 right-4 z-50">
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as "neon" | "midnight")}
-            className="bg-black/60 border border-white/10 text-xs font-semibold text-white px-3 py-1.5 rounded-lg focus:outline-none cursor-pointer hover:bg-white/5 transition-colors"
-          >
-            <option value="neon">✨ Neon Glass</option>
-            <option value="midnight">🌙 Midnight Ocean</option>
-          </select>
-        </div>
+        <button
+          onClick={() => setTheme(theme === "neon" ? "midnight" : "neon")}
+          className="fixed bottom-5 right-5 z-50 w-10 h-10 rounded-full bg-black/40 border border-white/15 flex items-center justify-center text-lg cursor-pointer hover:bg-white/10 hover:scale-110 transition-all shadow-lg backdrop-blur-md"
+          title={theme === "neon" ? "Midnight Ocean" : "Neon Glass"}
+        >
+          {theme === "neon" ? "🌙" : "✨"}
+        </button>
 
         {theme === "neon" && (
           <>
@@ -384,8 +381,7 @@ export default function BoxCounterPage() {
         )}
 
         <div className={cn(
-          "p-8 sm:p-10 rounded-2xl relative z-10 transition-all duration-300 shadow-2xl",
-          theme === "neon" ? "glass-panel" : "bg-[#0f172a]/80 border border-[#1e293b] backdrop-blur-xl"
+          "p-8 sm:p-10 rounded-2xl relative z-10 transition-all duration-300 shadow-2xl glass-panel"
         )}>
           <div className="text-center mb-8 mt-2">
             <h1 className="text-4xl font-extrabold tracking-tight mb-3">
@@ -478,15 +474,20 @@ export default function BoxCounterPage() {
                   <label className="text-xs font-semibold uppercase tracking-wider text-secondary mb-2 block">Start Frame</label>
                   <input
                     type="number"
+                    autoComplete="off"
                     value={startFrame}
-                    min={currentXmlData.minFrame}
-                    max={currentXmlData.maxFrame}
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
                       setStartFrame(isNaN(val) ? "" : val);
                     }}
                     onBlur={() => {
-                      if (startFrame === "") setStartFrame(currentXmlData.minFrame);
+                      if (!currentXmlData) return;
+                      if (startFrame === "" || (typeof startFrame === "number" && (startFrame < currentXmlData.minFrame || startFrame > currentXmlData.maxFrame))) {
+                        setStartFrame(currentXmlData.minFrame);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                     }}
                     className="w-full bg-transparent text-xl font-semibold text-white outline-none border-b border-white/10 focus:border-blue-500 transition-colors pb-2"
                   />
@@ -495,15 +496,20 @@ export default function BoxCounterPage() {
                   <label className="text-xs font-semibold uppercase tracking-wider text-secondary mb-2 block">End Frame</label>
                   <input
                     type="number"
+                    autoComplete="off"
                     value={endFrame}
-                    min={currentXmlData.minFrame}
-                    max={currentXmlData.maxFrame}
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
                       setEndFrame(isNaN(val) ? "" : val);
                     }}
                     onBlur={() => {
-                      if (endFrame === "") setEndFrame(currentXmlData.maxFrame);
+                      if (!currentXmlData) return;
+                      if (endFrame === "" || (typeof endFrame === "number" && (endFrame < currentXmlData.minFrame || endFrame > currentXmlData.maxFrame))) {
+                        setEndFrame(currentXmlData.maxFrame);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                     }}
                     className="w-full bg-transparent text-xl font-semibold text-white outline-none border-b border-white/10 focus:border-blue-500 transition-colors pb-2"
                   />
