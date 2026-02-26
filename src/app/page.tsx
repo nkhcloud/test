@@ -35,6 +35,7 @@ interface DuplicatePairDetail {
   frameId: number;
   boxIdA: number | string;
   boxIdB: number | string;
+  overlapPercent: "100%" | "99%" | "98%";
 }
 
 export default function BoxCounterPage() {
@@ -61,7 +62,7 @@ export default function BoxCounterPage() {
     totalFrames: number;
     duplicateExact100Count: number;
     duplicateNear99Count: number;
-    duplicateNear90Count: number;
+    duplicateNear98Count: number;
   } | null>(null);
 
   const [labelDetails, setLabelDetails] = useState<{ label: string; total: number }[]>([]);
@@ -400,7 +401,7 @@ export default function BoxCounterPage() {
 
     let duplicateExact100Count = 0;
     let duplicateNear99Count = 0;
-    let duplicateNear90Count = 0;
+    let duplicateNear98Count = 0;
     const duplicatePairs: DuplicatePairDetail[] = [];
 
     filteredImages.forEach((img) => {
@@ -427,6 +428,7 @@ export default function BoxCounterPage() {
               frameId: img.id,
               boxIdA,
               boxIdB,
+              overlapPercent: "100%",
             });
             continue;
           }
@@ -438,16 +440,18 @@ export default function BoxCounterPage() {
               frameId: img.id,
               boxIdA,
               boxIdB,
+              overlapPercent: "99%",
             });
             continue;
           }
 
-          if (iou >= 0.9) {
-            duplicateNear90Count++;
+          if (iou >= 0.98) {
+            duplicateNear98Count++;
             duplicatePairs.push({
               frameId: img.id,
               boxIdA,
               boxIdB,
+              overlapPercent: "98%",
             });
           }
         }
@@ -464,7 +468,7 @@ export default function BoxCounterPage() {
       totalFrames: filteredImages.length, // Only frames in range
       duplicateExact100Count,
       duplicateNear99Count,
-      duplicateNear90Count,
+      duplicateNear98Count,
     });
     setDuplicateDetails(duplicatePairs);
 
@@ -739,13 +743,13 @@ export default function BoxCounterPage() {
                         </div>
                       )}
 
-                      {(results.duplicateExact100Count > 0 || results.duplicateNear99Count > 0 || results.duplicateNear90Count > 0) && (
+                      {(results.duplicateExact100Count > 0 || results.duplicateNear99Count > 0 || results.duplicateNear98Count > 0) && (
                         <div className="col-span-2 flex items-center justify-between p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-200 mb-2 shadow-inner">
                           <span className="font-medium flex items-center gap-2">
                             <AlertCircle className="w-4 h-4" />
                             Duplicate Boxes (coord overlap)
                           </span>
-                          <span className="font-bold text-lg">100%: {results.duplicateExact100Count} • 99%: {results.duplicateNear99Count} • ≥90%: {results.duplicateNear90Count}</span>
+                          <span className="font-bold text-lg">100%: {results.duplicateExact100Count} • 99%: {results.duplicateNear99Count} • 98%: {results.duplicateNear98Count}</span>
                         </div>
                       )}
 
@@ -782,6 +786,8 @@ export default function BoxCounterPage() {
                               <span className="font-mono text-white">{item.boxIdA}</span>
                               <span className="text-secondary"> vs </span>
                               <span className="font-mono text-white">{item.boxIdB}</span>
+                              <span className="text-secondary"> • </span>
+                              <span className="font-semibold text-orange-300">{item.overlapPercent}</span>
                             </div>
                           ))}
                         </div>
