@@ -69,6 +69,25 @@ export default function BoxCounterPage() {
   const [showDetails, setShowDetails] = useState(false);
   const [showDuplicateDetails, setShowDuplicateDetails] = useState(false);
 
+  const preserveScrollAfterToggle = () => {
+    const currentScrollY = window.scrollY;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: currentScrollY, behavior: "auto" });
+      });
+    });
+  };
+
+  const handleToggleDuplicateDetails = () => {
+    setShowDuplicateDetails((prev: boolean) => !prev);
+    preserveScrollAfterToggle();
+  };
+
+  const handleToggleBreakdown = () => {
+    setShowDetails((prev: boolean) => !prev);
+    preserveScrollAfterToggle();
+  };
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -728,11 +747,11 @@ export default function BoxCounterPage() {
                     </div>
 
                     <button
-                      onClick={() => setShowDuplicateDetails(!showDuplicateDetails)}
+                      onClick={handleToggleDuplicateDetails}
                       className="group flex flex-col items-center justify-center w-full mb-4"
                     >
                       <div className="text-xs font-semibold uppercase tracking-widest text-secondary group-hover:text-white transition-colors flex items-center gap-2">
-                        {showDuplicateDetails ? "Hide Duplicate Frame / Box IDs" : "View Duplicate Frame / Box IDs"}
+                        {showDuplicateDetails ? "Hide Duplicate Box" : "View Duplicate Box"}
                         <ChevronDown className={cn("w-4 h-4 transition-transform", showDuplicateDetails && "rotate-180")} />
                       </div>
                     </button>
@@ -740,7 +759,7 @@ export default function BoxCounterPage() {
                     {showDuplicateDetails && duplicateDetails.length > 0 && (
                       <div className="mb-6 p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 animate-in slide-in-from-top-4 fade-in">
                         <div className="text-xs font-semibold uppercase tracking-widest text-orange-300 mb-3">
-                          Duplicate Frame / Box IDs
+                          Duplicate Box
                         </div>
                         <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                           {duplicateDetails.map((item, idx) => (
@@ -757,7 +776,7 @@ export default function BoxCounterPage() {
                     )}
 
                     <button
-                      onClick={() => setShowDetails(!showDetails)}
+                      onClick={handleToggleBreakdown}
                       className="group flex flex-col items-center justify-center w-full"
                     >
                       <div className="text-xs font-semibold uppercase tracking-widest text-secondary group-hover:text-white transition-colors flex items-center gap-2">
