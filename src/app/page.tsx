@@ -61,6 +61,7 @@ export default function BoxCounterPage() {
     totalFrames: number;
     duplicateExact100Count: number;
     duplicateNear99Count: number;
+    duplicateNear90Count: number;
   } | null>(null);
 
   const [labelDetails, setLabelDetails] = useState<{ label: string; total: number }[]>([]);
@@ -399,6 +400,7 @@ export default function BoxCounterPage() {
 
     let duplicateExact100Count = 0;
     let duplicateNear99Count = 0;
+    let duplicateNear90Count = 0;
     const duplicatePairs: DuplicatePairDetail[] = [];
 
     filteredImages.forEach((img) => {
@@ -437,6 +439,16 @@ export default function BoxCounterPage() {
               boxIdA,
               boxIdB,
             });
+            continue;
+          }
+
+          if (iou >= 0.9) {
+            duplicateNear90Count++;
+            duplicatePairs.push({
+              frameId: img.id,
+              boxIdA,
+              boxIdB,
+            });
           }
         }
       }
@@ -452,6 +464,7 @@ export default function BoxCounterPage() {
       totalFrames: filteredImages.length, // Only frames in range
       duplicateExact100Count,
       duplicateNear99Count,
+      duplicateNear90Count,
     });
     setDuplicateDetails(duplicatePairs);
 
@@ -726,13 +739,13 @@ export default function BoxCounterPage() {
                         </div>
                       )}
 
-                      {(results.duplicateExact100Count > 0 || results.duplicateNear99Count > 0) && (
+                      {(results.duplicateExact100Count > 0 || results.duplicateNear99Count > 0 || results.duplicateNear90Count > 0) && (
                         <div className="col-span-2 flex items-center justify-between p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-200 mb-2 shadow-inner">
                           <span className="font-medium flex items-center gap-2">
                             <AlertCircle className="w-4 h-4" />
                             Duplicate Boxes (coord overlap)
                           </span>
-                          <span className="font-bold text-lg">100%: {results.duplicateExact100Count} • 99%: {results.duplicateNear99Count}</span>
+                          <span className="font-bold text-lg">100%: {results.duplicateExact100Count} • 99%: {results.duplicateNear99Count} • ≥90%: {results.duplicateNear90Count}</span>
                         </div>
                       )}
 
