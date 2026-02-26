@@ -33,11 +33,8 @@ interface XmlData {
 
 interface DuplicatePairDetail {
   frameId: number;
-  frameName: string;
   boxIdA: number | string;
   boxIdB: number | string;
-  overlapType: "100%" | "99%";
-  iou: number;
 }
 
 export default function BoxCounterPage() {
@@ -70,6 +67,7 @@ export default function BoxCounterPage() {
   const [noBoxFramesCount, setNoBoxFramesCount] = useState(0);
   const [duplicateDetails, setDuplicateDetails] = useState<DuplicatePairDetail[]>([]);
   const [showDetails, setShowDetails] = useState(false);
+  const [showDuplicateDetails, setShowDuplicateDetails] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -406,11 +404,8 @@ export default function BoxCounterPage() {
             duplicateExact100Count++;
             duplicatePairs.push({
               frameId: img.id,
-              frameName: img.name,
               boxIdA,
               boxIdB,
-              overlapType: "100%",
-              iou: 1,
             });
             continue;
           }
@@ -420,11 +415,8 @@ export default function BoxCounterPage() {
             duplicateNear99Count++;
             duplicatePairs.push({
               frameId: img.id,
-              frameName: img.name,
               boxIdA,
               boxIdB,
-              overlapType: "99%",
-              iou,
             });
           }
         }
@@ -736,6 +728,35 @@ export default function BoxCounterPage() {
                     </div>
 
                     <button
+                      onClick={() => setShowDuplicateDetails(!showDuplicateDetails)}
+                      className="group flex flex-col items-center justify-center w-full mb-4"
+                    >
+                      <div className="text-xs font-semibold uppercase tracking-widest text-secondary group-hover:text-white transition-colors flex items-center gap-2">
+                        {showDuplicateDetails ? "Hide Duplicate Frame / Box IDs" : "View Duplicate Frame / Box IDs"}
+                        <ChevronDown className={cn("w-4 h-4 transition-transform", showDuplicateDetails && "rotate-180")} />
+                      </div>
+                    </button>
+
+                    {showDuplicateDetails && duplicateDetails.length > 0 && (
+                      <div className="mb-6 p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 animate-in slide-in-from-top-4 fade-in">
+                        <div className="text-xs font-semibold uppercase tracking-widest text-orange-300 mb-3">
+                          Duplicate Frame / Box IDs
+                        </div>
+                        <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                          {duplicateDetails.map((item, idx) => (
+                            <div key={`${item.frameId}-${item.boxIdA}-${item.boxIdB}-${idx}`} className="p-3 rounded-lg bg-white/5 border border-white/5 text-xs sm:text-sm text-zinc-200">
+                              Frame <span className="font-mono text-white">{item.frameId}</span>
+                              <span className="text-secondary"> • Box </span>
+                              <span className="font-mono text-white">{item.boxIdA}</span>
+                              <span className="text-secondary"> vs </span>
+                              <span className="font-mono text-white">{item.boxIdB}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <button
                       onClick={() => setShowDetails(!showDetails)}
                       className="group flex flex-col items-center justify-center w-full"
                     >
@@ -747,31 +768,6 @@ export default function BoxCounterPage() {
 
                     {showDetails && (
                       <div className="mt-6 space-y-2 animate-in slide-in-from-top-4 fade-in">
-                        {duplicateDetails.length > 0 && (
-                          <div className="mb-4 p-4 rounded-xl bg-orange-500/5 border border-orange-500/10">
-                            <div className="text-xs font-semibold uppercase tracking-widest text-orange-300 mb-3">
-                              Duplicate Box Details (Frame / Box IDs)
-                            </div>
-                            <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                              {duplicateDetails.map((item, idx) => (
-                                <div key={`${item.frameId}-${item.boxIdA}-${item.boxIdB}-${item.overlapType}-${idx}`} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white/5 border border-white/5 text-xs sm:text-sm">
-                                  <span className="text-zinc-200">
-                                    Frame <span className="font-mono text-white">{item.frameId}</span>
-                                    {item.frameName ? <span className="text-secondary"> ({item.frameName})</span> : null}
-                                    <span className="text-secondary"> • Box </span>
-                                    <span className="font-mono text-white">{item.boxIdA}</span>
-                                    <span className="text-secondary"> vs </span>
-                                    <span className="font-mono text-white">{item.boxIdB}</span>
-                                  </span>
-                                  <span className="font-semibold text-orange-300 whitespace-nowrap">
-                                    {item.overlapType} • IoU {(item.iou * 100).toFixed(2)}%
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
                         {labelDetails.map((item) => (
                           <div key={item.label} className="flex justify-between items-center p-3 sm:p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-transparent hover:border-white/5 group">
                             <span className="font-medium text-white flex items-center flex-wrap gap-2">
