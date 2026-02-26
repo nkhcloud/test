@@ -35,7 +35,7 @@ interface DuplicatePairDetail {
   frameId: number;
   boxIdA: number | string;
   boxIdB: number | string;
-  overlapPercent: "100%" | "Slight Deviation" | "Edge Deviation";
+  overlapPercent: "100%" | "99%" | "98%";
 }
 
 export default function BoxCounterPage() {
@@ -61,8 +61,8 @@ export default function BoxCounterPage() {
     lastBoxId: number | string;
     totalFrames: number;
     duplicateExact100Count: number;
-    duplicateStrictCount: number; // Lệch rất ít (<= 2px hoặc <= 1%)
-    duplicateLooseCount: number; // Lệch vừa ({<= 5px hoặc <= 2%})
+    duplicateNear99Count: number;
+    duplicateNear98Count: number;
   } | null>(null);
 
   const [labelDetails, setLabelDetails] = useState<{ label: string; total: number }[]>([]);
@@ -145,49 +145,6 @@ export default function BoxCounterPage() {
 
     if (unionArea <= 0) return 0;
     return interArea / unionArea;
-  };
-
-  const isApproximateSameBox = (
-    a: { xtl: number; ytl: number; xbr: number; ybr: number },
-    b: { xtl: number; ytl: number; xbr: number; ybr: number },
-    pixelTolerance: number = 3,
-    percentTolerance: number = 0.015 // 1.5%
-  ) => {
-    // 1. Độ lệch tuyệt đối (Pixel)
-    const diffXTL = Math.abs(a.xtl - b.xtl);
-    const diffYTL = Math.abs(a.ytl - b.ytl);
-    const diffXBR = Math.abs(a.xbr - b.xbr);
-    const diffYBR = Math.abs(a.ybr - b.ybr);
-
-    const isMatchByPixel =
-      diffXTL <= pixelTolerance &&
-      diffYTL <= pixelTolerance &&
-      diffXBR <= pixelTolerance &&
-      diffYBR <= pixelTolerance;
-
-    if (isMatchByPixel) return true;
-
-    // 2. Độ lệch tương đối (Relative / Percent)
-    // Dùng cho ảnh rất lớn, lệch 5px vẫn là rất nhỏ
-    const widthA = a.xbr - a.xtl;
-    const heightA = a.ybr - a.ytl;
-
-    // Nếu box quá nhỏ (width/height = 0), tránh chia cho 0
-    if (widthA <= 0 || heightA <= 0) return false;
-
-    // Tính % lệch dựa trên kích thước của Box A
-    const pctXTL = diffXTL / widthA;
-    const pctYTL = diffYTL / heightA;
-    const pctXBR = diffXBR / widthA;
-    const pctYBR = diffYBR / heightA;
-
-    const isMatchByPercent =
-      pctXTL <= percentTolerance &&
-      pctYTL <= percentTolerance &&
-      pctXBR <= percentTolerance &&
-      pctYBR <= percentTolerance;
-
-    return isMatchByPercent;
   };
 
   const isSameCoordinates = (
@@ -443,8 +400,8 @@ export default function BoxCounterPage() {
     const lastBoxId = allBoxIds.length > 0 ? Math.max(...allBoxIds) : "—";
 
     let duplicateExact100Count = 0;
-    let duplicateStrictCount = 0;
-    let duplicateLooseCount = 0;
+    let duplicateNear99Count = 0;
+    let duplicateNear98Count = 0;
     const duplicatePairs: DuplicatePairDetail[] = [];
 
     filteredImages.forEach((img) => {
@@ -476,26 +433,25 @@ export default function BoxCounterPage() {
             continue;
           }
 
-          // Kiểm tra lệch rất ít (Ngưỡng Strict: <= 2px || <= 1%)
-          if (isApproximateSameBox(first, second, 2, 0.01)) {
-            duplicateStrictCount++;
+          const iou = calculateIou(first, second);
+          if (iou >= 0.99) {
+            duplicateNear99Count++;
             duplicatePairs.push({
               frameId: img.id,
               boxIdA,
               boxIdB,
-              overlapPercent: "Slight Deviation",
+              overlapPercent: "99%",
             });
             continue;
           }
 
-          // Kiểm tra lệch vừa, mắt thường (Ngưỡng Loose: <= 5px || <= 2%)
-          if (isApproximateSameBox(first, second, 5, 0.02)) {
-            duplicateLooseCount++;
+          if (iou >= 0.98) {
+            duplicateNear98Count++;
             duplicatePairs.push({
               frameId: img.id,
               boxIdA,
               boxIdB,
-              overlapPercent: "Edge Deviation",
+              overlapPercent: "98%",
             });
           }
         }
@@ -511,8 +467,8 @@ export default function BoxCounterPage() {
       lastBoxId,
       totalFrames: filteredImages.length, // Only frames in range
       duplicateExact100Count,
-      duplicateStrictCount,
-      duplicateLooseCount,
+      duplicateNear99Count,
+      duplicateNear98Count,
     });
     setDuplicateDetails(duplicatePairs);
 
@@ -787,13 +743,13 @@ export default function BoxCounterPage() {
                         </div>
                       )}
 
-                      {(results.duplicateExact100Count > 0 || results.duplicateStrictCount > 0 || results.duplicateLooseCount > 0) && (
+                      {(results.duplicateExact100Count > 0 || results.duplicateNear99Count > 0 || results.duplicateNear98Count > 0) && (
                         <div className="col-span-2 flex items-center justify-between p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-200 mb-2 shadow-inner">
                           <span className="font-medium flex items-center gap-2">
                             <AlertCircle className="w-4 h-4" />
-                            Duplicate Boxes
+                            Duplicate Boxes (coord overlap)
                           </span>
-                          <span className="font-bold text-lg">{results.duplicateExact100Count + results.duplicateStrictCount + results.duplicateLooseCount}</span>
+                          <span className="font-bold text-lg">100%: {results.duplicateExact100Count} • 99%: {results.duplicateNear99Count} • 98%: {results.duplicateNear98Count}</span>
                         </div>
                       )}
 
