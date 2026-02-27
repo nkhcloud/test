@@ -464,6 +464,9 @@ export default function BoxCounterPage() {
           const secondIdx = validBoxes[j].idx;
           const boxIdA = img.boxIds[firstIdx] ?? `index:${firstIdx + 1}`;
           const boxIdB = img.boxIds[secondIdx] ?? `index:${secondIdx + 1}`;
+          const labelA = String(img.boxLabels[firstIdx] || "").trim().toLowerCase();
+          const labelB = String(img.boxLabels[secondIdx] || "").trim().toLowerCase();
+          const isSameLabel = labelA === labelB;
 
           if (isSameCoordinates(first, second)) {
             duplicateExact100Count++;
@@ -473,6 +476,20 @@ export default function BoxCounterPage() {
               boxIdB,
               overlapPercent: "100%",
             });
+            continue;
+          }
+
+          // Box khác label chỉ tính trùng khi gần như khớp tuyệt đối (>= 99.9% IoU)
+          if (!isSameLabel) {
+            if (calculateIou(first, second) >= 0.999) {
+              duplicateStrictCount++;
+              duplicatePairs.push({
+                frameId: img.id,
+                boxIdA,
+                boxIdB,
+                overlapPercent: "Slight Deviation",
+              });
+            }
             continue;
           }
 
