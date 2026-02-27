@@ -35,7 +35,7 @@ interface DuplicatePairDetail {
   frameId: number;
   boxIdA: number | string;
   boxIdB: number | string;
-  overlapPercent: "100%" | "Slight Deviation" | "Edge Deviation";
+  overlapPercent: "100%" | "99.9%" | "99%" | "Slight Deviation" | "Edge Deviation";
 }
 
 export default function BoxCounterPage() {
@@ -467,6 +467,7 @@ export default function BoxCounterPage() {
           const labelA = String(img.boxLabels[firstIdx] || "").trim().toLowerCase();
           const labelB = String(img.boxLabels[secondIdx] || "").trim().toLowerCase();
           const isSameLabel = labelA === labelB;
+          const iou = calculateIou(first, second);
 
           if (isSameCoordinates(first, second)) {
             duplicateExact100Count++;
@@ -481,20 +482,33 @@ export default function BoxCounterPage() {
 
           // Box khác label chỉ tính trùng khi gần như khớp tuyệt đối (>= 99.9% IoU)
           if (!isSameLabel) {
-            if (calculateIou(first, second) >= 0.999) {
+            if (iou >= 0.999) {
               duplicateStrictCount++;
               duplicatePairs.push({
                 frameId: img.id,
                 boxIdA,
                 boxIdB,
-                overlapPercent: "Slight Deviation",
+                overlapPercent: "99.9%",
+              });
+            } else if (iou >= 0.99) {
+              duplicateLooseCount++;
+              duplicatePairs.push({
+                frameId: img.id,
+                boxIdA,
+                boxIdB,
+                overlapPercent: "99%",
               });
             }
             continue;
           }
 
-          // Kiểm tra lệch rất ít (Ngưỡng Strict: <= 2px || <= 1%)
-          if (isApproximateSameBox(first, second, 2, 0.01)) {
+          // Cùng label nhưng không chồng lấp đáng kể thì không tính trùng
+          if (iou < 0.9) {
+            continue;
+          }
+
+          // Kiểm tra lệch rất ít (Ngưỡng Strict: <= 2px || <= 1%, IoU >= 99%)
+          if (iou >= 0.99 && isApproximateSameBox(first, second, 2, 0.01)) {
             duplicateStrictCount++;
             duplicatePairs.push({
               frameId: img.id,
@@ -505,8 +519,8 @@ export default function BoxCounterPage() {
             continue;
           }
 
-          // Kiểm tra lệch vừa, mắt thường (Ngưỡng Loose: <= 5px || <= 2%)
-          if (isApproximateSameBox(first, second, 5, 0.02)) {
+          // Kiểm tra lệch vừa, mắt thường (Ngưỡng Loose: <= 5px || <= 2%, IoU >= 95%)
+          if (iou >= 0.95 && isApproximateSameBox(first, second, 5, 0.02)) {
             duplicateLooseCount++;
             duplicatePairs.push({
               frameId: img.id,
