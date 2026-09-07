@@ -53,7 +53,7 @@ describe('CVAT Job session', () => {
 
   async function openJob() {
     await click('Lấy danh sách Task');
-    await click('Tải annotation Job');
+    await click('Mở Job');
   }
 
   it('keeps loaded Task/Job choices after closing and opens another Job without listing again', async () => {
@@ -67,7 +67,7 @@ describe('CVAT Job session', () => {
       jobSelect.value = '102';
       jobSelect.dispatchEvent(new Event('change', { bubbles: true }));
     });
-    await click('Tải annotation Job');
+    await click('Mở Job');
     expect(loadCvatJobDataset).toHaveBeenLastCalledWith(expect.objectContaining({ token: 'test-token' }), 10, 102);
     expect(listCvatTasks).toHaveBeenCalledTimes(1);
     expect(listCvatJobs).toHaveBeenCalledTimes(1);
@@ -101,7 +101,7 @@ describe('CVAT Job session', () => {
     vi.mocked(listCvatJobs).mockResolvedValueOnce([]);
     vi.mocked(loadCvatTaskDataset).mockResolvedValue(dataset('task-10.json'));
     await click('Lấy danh sách Task');
-    await click('Mở cả Task');
+    await click('Mở Task');
     expect(container.querySelector('.app-file-bar')?.textContent).toContain('task-10.json');
     await click('Tải lại Task');
     expect(loadCvatTaskDataset).toHaveBeenCalledTimes(2);

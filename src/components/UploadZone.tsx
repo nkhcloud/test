@@ -48,7 +48,7 @@ export default function UploadZone({
     >
       <div className="app-empty-heading">
         <span className="app-eyebrow">CVAT ANNOTATION QA</span>
-        <h1 id="upload-title">CVAT Box Audit</h1>
+        <h1 id="upload-title">Cvat Tools</h1>
         <p>
           Mở file annotation để kiểm tra box trùng, rà soát nhãn và xem nhanh thống kê dữ liệu.
         </p>

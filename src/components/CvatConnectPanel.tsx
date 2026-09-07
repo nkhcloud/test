@@ -142,7 +142,6 @@ export default function CvatConnectPanel({ onDatasetLoaded }: CvatConnectPanelPr
         <label className="text-xs font-semibold text-slate-600">
           Personal Access Token (Read Only)
           <input value={token} onChange={(event) => setToken(event.target.value)} onBlur={saveCurrentToken} placeholder="Dán token CVAT" type="password" className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" autoComplete="off" />
-          <button type="button" onClick={() => { setToken(''); void window.cvatDesktop?.saveToken(''); }} className="mt-1.5 text-[11px] font-semibold text-slate-500 hover:text-red-600">Xóa PAT đã lưu</button>
           {token && <span className="ml-3 text-[11px] font-medium text-slate-500">Đã nhập: {token.length} ký tự</span>}
         </label>
       </div>
@@ -182,10 +181,10 @@ export default function CvatConnectPanel({ onDatasetLoaded }: CvatConnectPanelPr
           )}
         </label>
         <button type="button" onClick={() => void handleLoad(false)} disabled={isLoading || !desktopAvailable} className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-60">
-          <KeyRound className="h-4 w-4" /> Tải annotation Job
+          <KeyRound className="h-4 w-4" /> Mở Job
         </button>
         <button type="button" onClick={() => void handleLoad(true)} disabled={isLoading || !desktopAvailable} className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-60">
-          <CloudDownload className="h-4 w-4" /> Mở cả Task
+          <CloudDownload className="h-4 w-4" /> Mở Task
         </button>
       </div>
 

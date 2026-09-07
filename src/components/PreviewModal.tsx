@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import {
   Layers,
   X,
-  Maximize2,
+  Target,
   Eye,
   Loader2
 } from 'lucide-react';
@@ -122,7 +122,7 @@ export default function PreviewModal({
                         className="p-1 rounded-md text-xs font-bold transition-all flex items-center space-x-1 bg-white text-blue-700 shadow-2xs border border-slate-200 hover:bg-slate-50"
                         title="Di chuyển đến vị trí lỗi trên ảnh"
                       >
-                        <Maximize2 className="w-3.5 h-3.5 text-blue-600" />
+                        <Target className="w-3.5 h-3.5 text-blue-600" />
                         <span className="hidden sm:inline">Đến vị trí lỗi</span>
                       </button>
                       <div className="flex items-center space-x-1 pl-1.5 border-l border-slate-200">

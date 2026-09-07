@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const { safeStorage } = require('electron');
 
 const APP_ID = 'com.ndcli.cvatboxcounter';
-const APP_TITLE = 'CVAT Box Counter & Duplicate Inspector';
+const APP_TITLE = 'Cvat Tools';
 const rendererUrl = process.env.ELECTRON_RENDERER_URL;
 
 function defaultToken() {

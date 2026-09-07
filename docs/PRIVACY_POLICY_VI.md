@@ -1,8 +1,8 @@
-# Chính sách quyền riêng tư — CVAT Box Audit
+# Chính sách quyền riêng tư — CVAT Box Tools
 
 Ngày hiệu lực: 05/09/2026
 
-CVAT Box Audit là ứng dụng kiểm tra annotation CVAT trên Windows, do Hoakim phát hành. Chính sách này áp dụng cho bản Store được build với PostHog tắt.
+CVAT Box Tools là ứng dụng kiểm tra annotation CVAT trên Windows, do Hoakim phát hành. Chính sách này áp dụng cho bản Store được build với PostHog tắt.
 
 ## Dữ liệu được xử lý
 
@@ -12,9 +12,9 @@ Khi dùng kết nối CVAT, ứng dụng gửi yêu cầu trực tiếp từ thi
 
 ## Token CVAT
 
-Ứng dụng có kèm token mặc định của tổ chức trong gói, dùng khi người dùng không nhập token riêng. Token mặc định không được mã hóa theo tài khoản Windows của từng người dùng. Người quản lý CVAT có thể thu hồi token này.
+Bản Store có kèm token CVAT mặc định của tổ chức, dùng khi người dùng không nhập token riêng. Token mặc định không được mã hóa theo tài khoản Windows của từng người dùng. Người quản lý CVAT có thể thu hồi token này.
 
-Token nhập tay được ưu tiên thay token mặc định, mã hóa bằng cơ chế bảo vệ dữ liệu Windows và lưu theo tài khoản Windows. Nút "Xóa PAT đã lưu" xóa token nhập tay đã lưu; không xóa token mặc định trong gói. Thông tin xác thực được gửi đến server CVAT được cấu hình để thực hiện yêu cầu người dùng.
+Token nhập tay được ưu tiên thay token mặc định, mã hóa bằng cơ chế bảo vệ dữ liệu Windows và lưu theo tài khoản Windows. Xóa nội dung ô token rồi rời ô sẽ xóa token nhập tay đã lưu; không xóa token mặc định trong gói. Thông tin xác thực được gửi đến server CVAT được cấu hình để thực hiện yêu cầu người dùng.
 
 Ứng dụng lưu cục bộ một số thiết lập như nhãn loại trừ. Danh sách Task/Job được giữ trong bộ nhớ phiên làm việc, không tự đồng bộ liên tục.
 
@@ -24,4 +24,4 @@ Token nhập tay được ưu tiên thay token mặc định, mã hóa bằng c�
 
 ## Liên hệ
 
-Nếu có câu hỏi về quyền riêng tư hoặc yêu cầu hỗ trợ, vui lòng tạo yêu cầu tại [GitHub Issues của CVAT Box Audit](https://github.com/NDCLI/box/issues).
+Nếu có câu hỏi về quyền riêng tư hoặc yêu cầu hỗ trợ, vui lòng tạo yêu cầu tại [GitHub Issues của CVAT Box Tools](https://github.com/NDCLI/box/issues).

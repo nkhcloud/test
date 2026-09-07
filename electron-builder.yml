@@ -34,7 +34,7 @@ appx:
   identityName: Hoakim.CVATBoxAudit
   publisher: CN=06970FBF-6DEA-4FD9-BB5E-DCC0D8D933EB
   applicationId: CVATBoxCounter
-  displayName: CVAT Box Audit
+  displayName: CVAT Box Tools
   publisherDisplayName: Hoakim
   capabilities:
     - privateNetworkClientServer
